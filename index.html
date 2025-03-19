@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypteur de Message Sécurisé</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        secure: {
+                            black: '#0f172a',
+                            darkgray: '#1e293b',
+                            gray: '#334155',
+                            accent: '#3b82f6',
+                            accentdark: '#2563eb',
+                            accentlight: '#60a5fa',
+                            text: '#e2e8f0',
+                            textmuted: '#94a3b8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'secure': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'secure-glow': '0 0 15px rgba(59, 130, 246, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-secure-black text-secure-text font-sans min-h-screen p-6">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-secure-accent">
+                Encrypteur de Message Sécurisé
+            </h1>
+            <div class="mt-2 text-sm text-secure-textmuted">AES-256 + PBKDF2 | Chiffrement de niveau professionnel</div>
+        </div>
+
+        <div id="encryptSection"
+            class="container bg-secure-darkgray rounded-lg p-6 mb-6 border border-secure-gray shadow-secure">
+            <h2 class="text-xl font-bold mb-4 pb-2 border-b border-secure-gray">Créer un message chiffré</h2>
+
+            <!-- Étape 1: Message section -->
+            <div id="messageStep" class="mb-4">
+                <label for="message" class="block mb-2 text-secure-textmuted">Votre message :</label>
+                <textarea id="message" rows="5" placeholder="Écrivez votre message ici..."
+                    class="w-full p-3 rounded bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none resize-none placeholder-secure-textmuted"></textarea>
+                <button onclick="validateMessage()"
+                    class="mt-4 bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2 px-4 rounded transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50">
+                    Continuer
+                </button>
+            </div>
+
+            <!-- Étape 2: Password section (initially hidden) -->
+            <div id="passwordStep" class="mb-4 hidden">
+                <label for="password" class="block mb-2 text-secure-textmuted">Mot de passe :</label>
+                <input type="password" id="password" placeholder="Entrez un mot de passe"
+                    class="w-full p-3 rounded bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none placeholder-secure-textmuted">
+                <button onclick="encryptMessage()"
+                    class="mt-4 bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2 px-4 rounded transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50">
+                    Chiffrer le message
+                </button>
+            </div>
+
+            <!-- Étape 3: Results section (initially hidden) -->
+            <div id="resultSection" class="hidden mt-6 p-4 border border-secure-gray rounded bg-secure-black">
+                <h3 class="text-lg font-medium mb-2">URL avec message chiffré :</h3>
+                <div id="encryptedUrl"
+                    class="p-3 bg-secure-darkgray rounded border border-secure-gray overflow-auto text-sm break-all">
+                </div>
+                <button onclick="copyToClipboard()"
+                    class="mt-4 bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2 px-4 rounded transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50">
+                    Copier l'URL
+                </button>
+                <p id="copyMessage" class="hidden mt-2 text-secure-accentlight">URL copiée dans le
+                    presse-papiers</p>
+            </div>
+        </div>
+
+        <div id="decryptSection"
+            class="container hidden bg-secure-darkgray rounded-lg p-6 border border-secure-gray shadow-secure">
+            <h2 class="text-xl font-bold mb-4 pb-2 border-b border-secure-gray">Déchiffrer un message</h2>
+            <div class="mb-4">
+                <label for="decryptPassword" class="block mb-2 text-secure-textmuted">Mot de passe :</label>
+                <input type="password" id="decryptPassword" placeholder="Entrez le mot de passe pour déchiffrer"
+                    class="w-full p-3 rounded bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none placeholder-secure-textmuted">
+            </div>
+            <button onclick="decryptMessage()"
+                class="bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2 px-4 rounded transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50">
+                Déchiffrer le message
+            </button>
+            <p id="decryptError" class="hidden mt-2 text-red-500 font-bold">Mot de passe incorrect ou message
+                corrompu</p>
+
+            <div id="decryptedMessageSection" class="hidden mt-6 p-4 border border-secure-gray rounded bg-secure-black">
+                <h3 class="text-lg font-medium mb-2">Message déchiffré :</h3>
+                <div id="decryptedMessage"
+                    class="p-3 bg-secure-darkgray rounded border border-secure-gray overflow-auto whitespace-pre-wrap">
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8 text-sm text-secure-textmuted flex flex-col items-center">
+            <div class="mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Chiffrement de bout en bout - Les données ne quittent jamais votre navigateur
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encryptedData = urlParams.get('data');
+
+            if (encryptedData) {
+                document.getElementById('encryptSection').classList.add('hidden');
+                document.getElementById('decryptSection').classList.remove('hidden');
+            }
+        };
+
+        function validateMessage() {
+            const message = document.getElementById('message').value;
+            if (!message) {
+                alert("Veuillez saisir un message.");
+                return;
+            }
+
+            document.getElementById('messageStep').classList.add('hidden');
+            document.getElementById('passwordStep').classList.remove('hidden');
+        }
+
+        function deriveKey(password, salt) {
+            const keySize = 256 / 32;
+            const iterations = 10000;
+            return CryptoJS.PBKDF2(password, salt, {
+                keySize: keySize,
+                iterations: iterations
+            });
+        }
+
+        function encryptMessage() {
+            const message = document.getElementById('message').value;
+            const password = document.getElementById('password').value;
+
+            if (!message || !password) {
+                alert("Veuillez saisir un message et un mot de passe.");
+                return;
+            }
+
+            try {
+                const salt = CryptoJS.lib.WordArray.random(128 / 8);
+                const iv = CryptoJS.lib.WordArray.random(128 / 8);
+                const key = deriveKey(password, salt);
+
+                const encrypted = CryptoJS.AES.encrypt(message, key, {
+                    iv: iv,
+                    padding: CryptoJS.pad.Pkcs7,
+                    mode: CryptoJS.mode.CBC
+                });
+
+                const encryptedPackage = {
+                    salt: salt.toString(CryptoJS.enc.Base64),
+                    iv: iv.toString(CryptoJS.enc.Base64),
+                    encrypted: encrypted.toString()
+                };
+
+                const jsonString = JSON.stringify(encryptedPackage);
+                const base64Data = btoa(jsonString);
+                const encodedData = encodeURIComponent(base64Data);
+
+                const currentUrl = window.location.href.split('?')[0];
+                const encryptedUrl = `${currentUrl}?data=${encodedData}`;
+
+                document.getElementById('encryptedUrl').textContent = encryptedUrl;
+                document.getElementById('passwordStep').classList.add('hidden');
+                document.getElementById('resultSection').classList.remove('hidden');
+            } catch (error) {
+                alert("Erreur lors du chiffrement: " + error.message);
+            }
+        }
+
+        function decryptMessage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encryptedData = urlParams.get('data');
+            const password = document.getElementById('decryptPassword').value;
+
+            if (!password) {
+                alert("Veuillez saisir le mot de passe.");
+                return;
+            }
+
+            try {
+                const decodedData = decodeURIComponent(encryptedData);
+                const jsonString = atob(decodedData);
+                const encryptedPackage = JSON.parse(jsonString);
+
+                const salt = CryptoJS.enc.Base64.parse(encryptedPackage.salt);
+                const iv = CryptoJS.enc.Base64.parse(encryptedPackage.iv);
+                const encrypted = encryptedPackage.encrypted;
+
+                const key = deriveKey(password, salt);
+
+                const decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+                    iv: iv,
+                    padding: CryptoJS.pad.Pkcs7,
+                    mode: CryptoJS.mode.CBC
+                });
+
+                const decryptedMessage = decrypted.toString(CryptoJS.enc.Utf8);
+
+                if (!decryptedMessage) {
+                    throw new Error("Mot de passe incorrect");
+                }
+
+                document.getElementById('decryptedMessage').textContent = decryptedMessage;
+                document.getElementById('decryptedMessageSection').classList.remove('hidden');
+                document.getElementById('decryptError').classList.add('hidden');
+            } catch (error) {
+                document.getElementById('decryptError').classList.remove('hidden');
+                document.getElementById('decryptedMessageSection').classList.add('hidden');
+            }
+        }
+
+        function copyToClipboard() {
+            const encryptedUrl = document.getElementById('encryptedUrl').textContent;
+            navigator.clipboard.writeText(encryptedUrl).then(function () {
+                const copyMessage = document.getElementById('copyMessage');
+                copyMessage.classList.remove('hidden');
+                setTimeout(function () {
+                    copyMessage.classList.add('hidden');
+                }, 2000);
+            }, function (err) {
+                alert("Erreur lors de la copie: " + err);
+            });
+        }
+    </script>
+</body>
+
+</html>
