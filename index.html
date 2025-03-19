@@ -260,131 +260,118 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-        window.onload = function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const encryptedData = urlParams.get('data');
+window.onload = function () {
+    // Vérifie si un message chiffré est présent dans l'URL et affiche la section correspondante
+    const urlParams = new URLSearchParams(window.location.search);
+    const encryptedData = urlParams.get('data');
+    if (encryptedData) {
+        document.getElementById('encryptSection').classList.add('hidden');
+        document.getElementById('decryptSection').classList.remove('hidden');
+    }
+};
 
-            if (encryptedData) {
-                document.getElementById('encryptSection').classList.add('hidden');
-                document.getElementById('decryptSection').classList.remove('hidden');
-            }
-        };
+function validateMessage() {
+    // Valide que le message a été saisi avant de passer à l'étape suivante (mot de passe)
+    const message = document.getElementById('message').value;
+    if (!message) {
+        alert("Veuillez saisir un message.");
+        return;
+    }
+    document.getElementById('messageStep').classList.add('hidden');
+    document.getElementById('passwordStep').classList.remove('hidden');
+}
 
-        function validateMessage() {
-            const message = document.getElementById('message').value;
-            if (!message) {
-                alert("Veuillez saisir un message.");
-                return;
-            }
+function deriveKey(password, salt) {
+    // Génère une clé de chiffrement à partir du mot de passe et du sel avec PBKDF2
+    const keySize = 256 / 32;
+    const iterations = 10000;
+    return CryptoJS.PBKDF2(password, salt, { keySize: keySize, iterations: iterations });
+}
 
-            document.getElementById('messageStep').classList.add('hidden');
-            document.getElementById('passwordStep').classList.remove('hidden');
-        }
+function encryptMessage() {
+    // Chiffre le message avec AES-256 et génère une URL contenant les données chiffrées
+    const message = document.getElementById('message').value;
+    const password = document.getElementById('password').value;
+    if (!message || !password) {
+        alert("Veuillez saisir un message et un mot de passe.");
+        return;
+    }
 
-        function deriveKey(password, salt) {
-            const keySize = 256 / 32;
-            const iterations = 10000;
-            return CryptoJS.PBKDF2(password, salt, {
-                keySize: keySize,
-                iterations: iterations
-            });
-        }
+    try {
+        const salt = CryptoJS.lib.WordArray.random(128 / 8);
+        const iv = CryptoJS.lib.WordArray.random(128 / 8);
+        const key = deriveKey(password, salt);
 
-        function encryptMessage() {
-            const message = document.getElementById('message').value;
-            const password = document.getElementById('password').value;
+        // Chiffre le message et prépare les données pour l'URL
+        const encrypted = CryptoJS.AES.encrypt(message, key, { iv: iv, padding: CryptoJS.pad.Pkcs7, mode: CryptoJS.mode.CBC });
+        const encryptedPackage = { salt: salt.toString(CryptoJS.enc.Base64), iv: iv.toString(CryptoJS.enc.Base64), encrypted: encrypted.toString() };
+        const jsonString = JSON.stringify(encryptedPackage);
+        const base64Data = btoa(jsonString);
+        const encodedData = encodeURIComponent(base64Data);
 
-            if (!message || !password) {
-                alert("Veuillez saisir un message et un mot de passe.");
-                return;
-            }
+        // Crée l'URL contenant les données chiffrées
+        const currentUrl = window.location.href.split('?')[0];
+        const encryptedUrl = `${currentUrl}?data=${encodedData}`;
+        document.getElementById('encryptedUrl').textContent = encryptedUrl;
 
-            try {
-                const salt = CryptoJS.lib.WordArray.random(128 / 8);
-                const iv = CryptoJS.lib.WordArray.random(128 / 8);
-                const key = deriveKey(password, salt);
+        // Affiche l'URL et cache les étapes précédentes
+        document.getElementById('passwordStep').classList.add('hidden');
+        document.getElementById('resultSection').classList.remove('hidden');
+    } catch (error) {
+        alert("Erreur lors du chiffrement: " + error.message);
+    }
+}
 
-                const encrypted = CryptoJS.AES.encrypt(message, key, {
-                    iv: iv,
-                    padding: CryptoJS.pad.Pkcs7,
-                    mode: CryptoJS.mode.CBC
-                });
+function decryptMessage() {
+    // Déchiffre le message en récupérant les données de l'URL et en utilisant le mot de passe
+    const urlParams = new URLSearchParams(window.location.search);
+    const encryptedData = urlParams.get('data');
+    const password = document.getElementById('decryptPassword').value;
 
-                const encryptedPackage = {
-                    salt: salt.toString(CryptoJS.enc.Base64),
-                    iv: iv.toString(CryptoJS.enc.Base64),
-                    encrypted: encrypted.toString()
-                };
+    if (!password) {
+        alert("Veuillez saisir le mot de passe.");
+        return;
+    }
 
-                const jsonString = JSON.stringify(encryptedPackage);
-                const base64Data = btoa(jsonString);
-                const encodedData = encodeURIComponent(base64Data);
+    try {
+        // Décode les données chiffrées et les déchiffre
+        const decodedData = decodeURIComponent(encryptedData);
+        const jsonString = atob(decodedData);
+        const encryptedPackage = JSON.parse(jsonString);
+        const salt = CryptoJS.enc.Base64.parse(encryptedPackage.salt);
+        const iv = CryptoJS.enc.Base64.parse(encryptedPackage.iv);
+        const encrypted = encryptedPackage.encrypted;
+        const key = deriveKey(password, salt);
 
-                const currentUrl = window.location.href.split('?')[0];
-                const encryptedUrl = `${currentUrl}?data=${encodedData}`;
+        const decrypted = CryptoJS.AES.decrypt(encrypted, key, { iv: iv, padding: CryptoJS.pad.Pkcs7, mode: CryptoJS.mode.CBC });
+        const decryptedMessage = decrypted.toString(CryptoJS.enc.Utf8);
 
-                document.getElementById('encryptedUrl').textContent = encryptedUrl;
-                document.getElementById('passwordStep').classList.add('hidden');
-                document.getElementById('resultSection').classList.remove('hidden');
-            } catch (error) {
-                alert("Erreur lors du chiffrement: " + error.message);
-            }
-        }
+        if (!decryptedMessage) throw new Error("Mot de passe incorrect");
 
-        function decryptMessage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const encryptedData = urlParams.get('data');
-            const password = document.getElementById('decryptPassword').value;
+        // Affiche le message déchiffré ou une erreur
+        document.getElementById('decryptedMessage').textContent = decryptedMessage;
+        document.getElementById('decryptedMessageSection').classList.remove('hidden');
+        document.getElementById('decryptError').classList.add('hidden');
+    } catch (error) {
+        document.getElementById('decryptError').classList.remove('hidden');
+        document.getElementById('decryptedMessageSection').classList.add('hidden');
+    }
+}
 
-            if (!password) {
-                alert("Veuillez saisir le mot de passe.");
-                return;
-            }
+function copyToClipboard() {
+    // Copie l'URL chiffrée dans le presse-papiers
+    const encryptedUrl = document.getElementById('encryptedUrl').textContent;
+    navigator.clipboard.writeText(encryptedUrl).then(function () {
+        const copyMessage = document.getElementById('copyMessage');
+        copyMessage.classList.remove('hidden');
+        setTimeout(function () {
+            copyMessage.classList.add('hidden');
+        }, 2000);
+    }, function (err) {
+        alert("Erreur lors de la copie: " + err);
+    });
+}
 
-            try {
-                const decodedData = decodeURIComponent(encryptedData);
-                const jsonString = atob(decodedData);
-                const encryptedPackage = JSON.parse(jsonString);
-
-                const salt = CryptoJS.enc.Base64.parse(encryptedPackage.salt);
-                const iv = CryptoJS.enc.Base64.parse(encryptedPackage.iv);
-                const encrypted = encryptedPackage.encrypted;
-
-                const key = deriveKey(password, salt);
-
-                const decrypted = CryptoJS.AES.decrypt(encrypted, key, {
-                    iv: iv,
-                    padding: CryptoJS.pad.Pkcs7,
-                    mode: CryptoJS.mode.CBC
-                });
-
-                const decryptedMessage = decrypted.toString(CryptoJS.enc.Utf8);
-
-                if (!decryptedMessage) {
-                    throw new Error("Mot de passe incorrect");
-                }
-
-                document.getElementById('decryptedMessage').textContent = decryptedMessage;
-                document.getElementById('decryptedMessageSection').classList.remove('hidden');
-                document.getElementById('decryptError').classList.add('hidden');
-            } catch (error) {
-                document.getElementById('decryptError').classList.remove('hidden');
-                document.getElementById('decryptedMessageSection').classList.add('hidden');
-            }
-        }
-
-        function copyToClipboard() {
-            const encryptedUrl = document.getElementById('encryptedUrl').textContent;
-            navigator.clipboard.writeText(encryptedUrl).then(function () {
-                const copyMessage = document.getElementById('copyMessage');
-                copyMessage.classList.remove('hidden');
-                setTimeout(function () {
-                    copyMessage.classList.add('hidden');
-                }, 2000);
-            }, function (err) {
-                alert("Erreur lors de la copie: " + err);
-            });
-        }
     </script>
 </body>
 
