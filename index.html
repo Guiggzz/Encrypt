@@ -12,110 +12,248 @@
                 extend: {
                     colors: {
                         secure: {
-                            black: '#0f172a',
-                            darkgray: '#1e293b',
-                            gray: '#334155',
-                            accent: '#3b82f6',
-                            accentdark: '#2563eb',
-                            accentlight: '#60a5fa',
-                            text: '#e2e8f0',
-                            textmuted: '#94a3b8'
+                            black: '#0A0E17',
+                            darkgray: '#171F2F',
+                            gray: '#2A3649',
+                            accent: '#3E8EFF',
+                            accentdark: '#2272FF',
+                            accentlight: '#6FACFF',
+                            text: '#E6ECF5',
+                            textmuted: '#94A3B8',
+                            success: '#10B981',
+                            error: '#EF4444',
+                            warning: '#F59E0B'
                         }
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif']
                     },
                     boxShadow: {
-                        'secure': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                        'secure-glow': '0 0 15px rgba(59, 130, 246, 0.5)'
-                    }
+                        'secure': '0 4px 20px -1px rgba(0, 0, 0, 0.2), 0 2px 10px -1px rgba(0, 0, 0, 0.1)',
+                        'secure-glow': '0 0 20px rgba(62, 142, 255, 0.5)',
+                        'secure-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.2)'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    },
                 }
             }
         }
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="bg-secure-black text-secure-text font-sans min-h-screen p-6">
+<body class="bg-gradient-to-br from-secure-black to-secure-darkgray text-secure-text font-sans min-h-screen p-4 md:p-8">
     <div class="max-w-4xl mx-auto">
-        <div class="mb-8 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-secure-accent">
+        <div class="mb-10 text-center">
+            <div class="flex items-center justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-secure-accent" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h1
+                class="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-secure-accent to-secure-accentlight">
                 Encrypteur de Message Sécurisé
             </h1>
-            <div class="mt-2 text-sm text-secure-textmuted">AES-256 + PBKDF2 | Chiffrement de niveau professionnel</div>
+            <div class="mt-3 text-sm text-secure-textmuted">
+                <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secure-gray text-secure-accentlight">
+                    AES-256
+                </span>
+                <span class="mx-2">+</span>
+                <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secure-gray text-secure-accentlight">
+                    PBKDF2
+                </span>
+            </div>
         </div>
 
         <div id="encryptSection"
-            class="container bg-secure-darkgray rounded-lg p-6 mb-6 border border-secure-gray shadow-secure">
-            <h2 class="text-xl font-bold mb-4 pb-2 border-b border-secure-gray">Créer un message chiffré</h2>
+            class="container bg-secure-darkgray bg-opacity-80 backdrop-blur-sm rounded-xl p-6 md:p-8 mb-8 border border-secure-gray shadow-secure transition-all duration-300 hover:shadow-secure-glow">
+            <h2 class="text-xl font-bold mb-5 pb-3 border-b border-secure-gray flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-secure-accent" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Créer un message chiffré
+            </h2>
 
             <!-- Étape 1: Message section -->
-            <div id="messageStep" class="mb-4">
-                <label for="message" class="block mb-2 text-secure-textmuted">Votre message :</label>
+            <div id="messageStep" class="mb-6">
+                <label for="message" class="block mb-2 text-secure-text font-medium">Votre message :</label>
                 <textarea id="message" rows="5" placeholder="Écrivez votre message ici..."
-                    class="w-full p-3 rounded bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none resize-none placeholder-secure-textmuted"></textarea>
+                    class="w-full p-4 rounded-lg bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none resize-none placeholder-secure-textmuted transition-all duration-200"></textarea>
                 <button onclick="validateMessage()"
-                    class="mt-4 bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2 px-4 rounded transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50">
-                    Continuer
+                    class="mt-4 bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50 shadow-md hover:shadow-lg flex items-center">
+                    <span>Continuer</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
                 </button>
             </div>
 
             <!-- Étape 2: Password section (initially hidden) -->
-            <div id="passwordStep" class="mb-4 hidden">
-                <label for="password" class="block mb-2 text-secure-textmuted">Mot de passe :</label>
-                <input type="password" id="password" placeholder="Entrez un mot de passe"
-                    class="w-full p-3 rounded bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none placeholder-secure-textmuted">
-                <button onclick="encryptMessage()"
-                    class="mt-4 bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2 px-4 rounded transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50">
-                    Chiffrer le message
-                </button>
+            <div id="passwordStep" class="mb-6 hidden">
+                <label for="password" class="block mb-2 text-secure-text font-medium">Mot de passe :</label>
+                <div class="relative">
+                    <input type="password" id="password" placeholder="Entrez un mot de passe sécurisé"
+                        class="w-full p-4 pl-10 rounded-lg bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none placeholder-secure-textmuted transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 text-secure-textmuted absolute left-3 top-1/2 transform -translate-y-1/2"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                </div>
+                <div class="mt-2 text-xs text-secure-textmuted">
+                    Pour une sécurité optimale, utilisez un mot de passe fort et unique.
+                </div>
+                <div class="flex space-x-4 mt-4">
+                    <button onclick="validateMessage()"
+                        class="bg-transparent hover:bg-secure-gray text-secure-textmuted font-medium py-2.5 px-5 rounded-lg transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-secure-gray border border-secure-gray flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <span>Retour</span>
+                    </button>
+                    <button onclick="encryptMessage()"
+                        class="flex-grow bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50 shadow-md hover:shadow-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <span>Chiffrer le message</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Étape 3: Results section (initially hidden) -->
-            <div id="resultSection" class="hidden mt-6 p-4 border border-secure-gray rounded bg-secure-black">
-                <h3 class="text-lg font-medium mb-2">URL avec message chiffré :</h3>
+            <div id="resultSection"
+                class="hidden mt-8 p-6 border border-secure-gray rounded-lg bg-secure-black bg-opacity-50 backdrop-blur-xs">
+                <h3 class="text-lg font-medium mb-3 flex items-center text-secure-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    URL avec message chiffré :
+                </h3>
                 <div id="encryptedUrl"
-                    class="p-3 bg-secure-darkgray rounded border border-secure-gray overflow-auto text-sm break-all">
+                    class="p-4 bg-secure-gray rounded-lg border border-secure-gray overflow-auto text-sm break-all shadow-secure-inner">
                 </div>
-                <button onclick="copyToClipboard()"
-                    class="mt-4 bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2 px-4 rounded transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50">
-                    Copier l'URL
-                </button>
-                <p id="copyMessage" class="hidden mt-2 text-secure-accentlight">URL copiée dans le
-                    presse-papiers</p>
+                <div class="mt-6 flex space-x-4">
+                    <button onclick="copyToClipboard()"
+                        class="flex-grow bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50 shadow-md hover:shadow-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        <span>Copier l'URL</span>
+                    </button>
+                    <button onclick="resetForm()"
+                        class="bg-transparent hover:bg-secure-gray text-secure-textmuted font-medium py-2.5 px-5 rounded-lg transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-secure-gray border border-secure-gray flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Nouveau message</span>
+                    </button>
+                </div>
+                <div id="copyMessage"
+                    class="hidden mt-4 py-2 px-4 bg-secure-gray bg-opacity-50 rounded-lg text-secure-success text-sm flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    URL copiée dans le presse-papiers
+                </div>
             </div>
         </div>
 
         <div id="decryptSection"
-            class="container hidden bg-secure-darkgray rounded-lg p-6 border border-secure-gray shadow-secure">
-            <h2 class="text-xl font-bold mb-4 pb-2 border-b border-secure-gray">Déchiffrer un message</h2>
-            <div class="mb-4">
-                <label for="decryptPassword" class="block mb-2 text-secure-textmuted">Mot de passe :</label>
-                <input type="password" id="decryptPassword" placeholder="Entrez le mot de passe pour déchiffrer"
-                    class="w-full p-3 rounded bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none placeholder-secure-textmuted">
+            class="container hidden bg-secure-darkgray bg-opacity-80 backdrop-blur-sm rounded-xl p-6 md:p-8 mb-8 border border-secure-gray shadow-secure transition-all duration-300 hover:shadow-secure-glow">
+            <h2 class="text-xl font-bold mb-5 pb-3 border-b border-secure-gray flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-secure-accent" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                </svg>
+                Déchiffrer un message
+            </h2>
+            <div class="mb-6">
+                <label for="decryptPassword" class="block mb-2 text-secure-text font-medium">Mot de passe :</label>
+                <div class="relative">
+                    <input type="password" id="decryptPassword" placeholder="Entrez le mot de passe pour déchiffrer"
+                        class="w-full p-4 pl-10 rounded-lg bg-secure-gray text-secure-text border border-secure-gray focus:border-secure-accent focus:ring-1 focus:ring-secure-accent focus:outline-none placeholder-secure-textmuted transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 text-secure-textmuted absolute left-3 top-1/2 transform -translate-y-1/2"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                </div>
             </div>
             <button onclick="decryptMessage()"
-                class="bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2 px-4 rounded transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50">
-                Déchiffrer le message
+                class="w-full bg-secure-accent hover:bg-secure-accentdark text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-secure-accent focus:ring-opacity-50 shadow-md hover:shadow-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                </svg>
+                <span>Déchiffrer le message</span>
             </button>
-            <p id="decryptError" class="hidden mt-2 text-red-500 font-bold">Mot de passe incorrect ou message
-                corrompu</p>
+            <div id="decryptError"
+                class="hidden mt-4 py-2 px-4 bg-secure-gray bg-opacity-50 rounded-lg text-secure-error text-sm flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Mot de passe incorrect ou message corrompu
+            </div>
 
-            <div id="decryptedMessageSection" class="hidden mt-6 p-4 border border-secure-gray rounded bg-secure-black">
-                <h3 class="text-lg font-medium mb-2">Message déchiffré :</h3>
+            <div id="decryptedMessageSection"
+                class="hidden mt-8 p-6 border border-secure-gray rounded-lg bg-secure-black bg-opacity-50 backdrop-blur-xs">
+                <h3 class="text-lg font-medium mb-3 flex items-center text-secure-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    Message déchiffré :
+                </h3>
                 <div id="decryptedMessage"
-                    class="p-3 bg-secure-darkgray rounded border border-secure-gray overflow-auto whitespace-pre-wrap">
+                    class="p-4 bg-secure-gray rounded-lg border border-secure-gray overflow-auto whitespace-pre-wrap shadow-secure-inner text-secure-text">
                 </div>
             </div>
         </div>
 
-        <div class="text-center mt-8 text-sm text-secure-textmuted flex flex-col items-center">
-            <div class="mb-2 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+        <div class="text-center mt-10 text-sm text-secure-textmuted flex flex-col items-center">
+            <div class="mb-3 flex items-center bg-secure-black bg-opacity-50 py-2 px-4 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-secure-accent" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 Chiffrement de bout en bout - Les données ne quittent jamais votre navigateur
+            </div>
+            <div class="text-xs text-secure-textmuted">
+                © 2025 - Créer par Guiggzz en guise de projet personnel
             </div>
         </div>
     </div>
