@@ -19,7 +19,7 @@ Ce script JavaScript permet d'effectuer un chiffrement AES (Advanced Encryption 
 Le site web comporte une fonctionnalité principale qui fonctionne grâce à plusieurs sous-fonctionnalités.
 
 Le User Flow de création de message est le suivant :  
-**_Insérer une image représentant le User Flow ici_**
+![Texte alternatif](https://github.com/Guiggzz/Encrypt/blob/master/img/%7B9E11BCA9-11D5-4F2D-9C2D-2677B4B32B82%7D.png)
 
 L'objectif était de créer un site accessible et rapide d’utilisation.
 
@@ -29,6 +29,7 @@ Si l’utilisateur veut décoder le message, il doit simplement copier l’URL, 
 
 ### 2.2 Ce que l’utilisateur ne voit pas
 
+![Texte alternatif](https://github.com/Guiggzz/Encrypt/blob/master/img/%7B737F2B85-BDA7-449D-BFCD-8F8F80E02D7C%7D.png)
 
 
 Comme illustré dans ce schéma, AES 256 permet de chiffrer sur 256 bits, ce qui élève le nombre de possibilités à **2^256**.
