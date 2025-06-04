@@ -43,8 +43,3 @@ De plus, la dérivation de clé avec **PBKDF2** permet de transformer un mot de 
 - **Chiffrement sécurisé AES-256 CBC.**
 - **Utilisation de PBKDF2 pour renforcer la robustesse des mots de passe.**
 - **Interface fluide avec manipulation du DOM et événements interactifs.**
-
-### 🔧 Améliorations possibles :
-- **Ajouter WebCrypto API** pour un chiffrement natif plus rapide.
-- **Vérifier la robustesse des mots de passe** (ex: imposer 8+ caractères avec des critères de sécurité).
-- **Gérer l’expiration des liens** pour renforcer la sécurité des données partagées.
